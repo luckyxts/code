@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        body{
+            margin:0;
+            padding:0;
+        }
+        #alphaContainer{
+            position : absolute;
+            top:0;
+            left:0;
+        }
+    </style>
+    <script src="../myFrame.js"></script>
+</head>
+<body>
+    <canvas id="container" width="400" height="400"></canvas>
+    <canvas id="alphaContainer" width="400" height="400" style="background :rgba(255,255,255,0.1)"></canvas>
+    <script>
+        var container2 = document.getElementById('alphaContainer');
+        var ctx2 = container2.getContext('2d');
+        var container = document.getElementById('container');
+        var ctx = container.getContext('2d');
+//        var points = [
+//                vec2(200,400),
+//                vec2(500,400),
+//                vec2(600,300),
+//                vec2(400,200),
+//                vec2(400,100),
+//                vec2(200,100)
+//        ];
+//        var points = [
+//            vec2(200,400),
+//            vec2(400,400),
+//            vec2(500,300),
+//            vec2(600,400),
+//            vec2(600,100),
+//            vec2(200,100)
+//        ];
+//        var points = [
+//            vec2(200,400),
+//            vec2(500,400),
+//            vec2(600,300),
+//            vec2(300,200),
+//            vec2(100,300),
+//        ];
+
+//        var graph = new graph2D(ctx,points);
+//        var point11 = graph.cuttingConcave(points);
+//        graph.draw();
+////      分割三角形
+//        var point22 = graph.dividedTriangle(points);
+//        for(let i = 0 ; i < point22.length ; i++){
+//            var graph2 = new graph2D(ctx,point22[i]);
+//            graph2.draw();
+//        }
+//        cator(50,50,1000,50,ctx,2,20);
+//        koch(200,800,600,800- (Math.tan(Math.PI/3)*400),ctx,1);
+//        koch(600,800- (Math.tan(Math.PI/3)*400),1000,800,ctx,1);
+//        koch(1000,800,200,800,ctx,1);
+//        sierpinski1(600,600,300,ctx,3);
+//        var points = HilbertPeano(100,100,1200,1200,5,ctx);
+
+//        points.forEach(function(o,i){
+//            if(i === 0){
+//                ctx.moveTo(o[0],o[1]);
+//            }
+//            else{
+//                ctx.lineTo(o[0],o[1]);
+//            }
+//        })
+//        ctx.stroke();
+//        levy(400,300,600,300,ctx,11);
+//        tree(500,1000,);
+//        tree2(500,800,200,5,Math.PI/2,ctx);
+//        LSKoch(400,500,4,ctx);
+//        LSTree(400,1100,6,ctx);
+//        var xy = [
+//            [0.25 , 0 , 0   , 0.5 , 0 , 0 ,0.154],
+//            [0.5 , 0 , 0 , 0.5 , -0.25 , 0.5 , 0.307],
+//            [-0.25 , 0 ,0 , -0.25 , 0.25 , 1 , 0.078],
+//            [0.5 , 0 ,0 , 0.5 , 0 , 0.75 , 0.307],
+//            [0.5 , 0 ,0 , -0.25 , 0.5 , 1.25 , 0.154]
+//        ];
+//        var xy = [
+//            [-0.04,0,-0.19,-0.47,-0.12,0.3,0.25],
+//            [0.65,0,0,0.56,0.06,1.56,0.25],
+//            [0.41,0.46,-0.39,0.61,0.46,0.4,0.25],
+//            [0.52,-0.35,0.25,0.74,-0.48,0.38,0.25]
+//        ];
+//        var xy = [
+//            [0.195,-0.488,0.344,0.443,0.4431,0.2452,0.25],
+//            [0.462,0.414,-0.252,0.361,0.2511,0.5692,0.25],
+//            [-0.058,-0.07,0.453,-0.111,0.5976,0.0969,0.25],
+//            [-0.035,0.07,-0.469,-0.022,0.4884,0.5069,0.2],
+//            [-0.637,0,0,0.501,0.8562,0.2513,0.05]
+//        ];
+        var xy = [
+            [0.05,0,0,0.6,0,0,0.1],
+            [0.05,0,0,-0.5,0,1.0,0.1],
+            [0.46,0.32,-0.386,0.383,0,0.6,0.2],
+            [0.47,-0.154,0.171,0.423,0,1.0,0.2],
+            [0.43,0.275,-0.26,0.476,0,1.0,0.2],
+            [0.421,-0.357,0.354,0.307,0,0.7,0.2]
+        ];
+//        IFSSierpinski(0,0,300000,ctx,xy);
+//        ctx.arc(0,500,1,0,Math.PI*2);
+//        ctx.fill();
+
+//        IFSJuila(-0.11,0.6557,320000,ctx);
+//        julia(0.23,0.043,ctx);
+        var colors = [];
+        colors.push("#000000");
+        for(let i = 1 ; i < 1000 ; i++){
+            colors.push("rgb("+parseInt(Math.random()*256)+","+parseInt(Math.random()*256)+","+parseInt(Math.random()*256)+")");
+        }
+        var pl=2,ps=-2,ql=2,qs=-2;
+        MandelbrotJulia(ctx,pl,ps,ql,qs);
+//        julia(-0.199,0.66,ctx,pl,ps,ql,qs);
+        var dp = (pl - ps)/400;
+        var dq = (ql - qs)/400;
+        var flag = false;
+        var X1 , Y1 , X2 ,Y2;
+        container2.addEventListener('mousedown',function(e){
+//            console.log(e.keyCode);
+//            switch(e.keyCode){
+//                case 37 :pl -=0.1;ps +=-0.1;ql -= 0.1;qs+=-0.1;
+//                    MandelbrotJulia(ctx,pl,ps,ql,qs);break;
+//            }
+            X1 = e.clientX;
+            Y1 = e.clientY;
+            flag= true;
+        });
+        container2.addEventListener('mousemove',function(e){
+            if(flag){
+                ctx2.clearRect(0,0,400,400);
+                ctx2.beginPath();
+                var width = e.clientX - X1;
+                var height = e.clientY - Y1;
+                ctx2.rect( X1,Y1,width,height);
+                ctx2.closePath();
+                ctx2.stroke();
+            }
+        });
+
+        container2.addEventListener('mouseup',function(e){
+            if(!flag){
+                return ;
+            }
+            flag = false;
+            X2 = e.clientX;
+            Y2 = e.clientY;
+            var tmp;
+            if(X1 > X2){
+                tmp = X1;
+                X1 = X2;
+                X2 = tmp;
+                tmp = Y1;
+                Y1 = Y2;
+                Y2 = tmp;
+            }
+            dp = (pl - ps)/400;
+            dq = (ql - qs)/400;
+            var tmp = ps;
+            ps = ps + X1*dp;
+            pl = tmp + X2*dp;
+            var tmp = qs;
+            qs = qs + Y1*dq;
+            ql = tmp + Y2*dq;
+            ctx.clearRect(0,0,400,400);
+            ctx2.clearRect(0,0,400,400);
+            MandelbrotJulia(ctx,pl,ps,ql,qs);
+//            julia(-0.199,0.66,ctx,pl,ps,ql,qs);
+        });
+    </script>
+</body>
+</html>

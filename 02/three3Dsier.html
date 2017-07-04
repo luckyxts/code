@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../node_modules/three/build/three.js"></script>
+    <script src="../node_modules/three/examples/js/controls/TrackballControls.js"></script>
+    <style>
+        body{
+            overflow: hidden;
+            margin:0;
+            padding:0;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    <script>
+        var scene,camera,renderer;
+        var controls;
+        init();
+        function init(){
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(45,window.innerWidth/window.innerHeight,1,1000);
+            camera.position.z = 100;
+            renderer = new THREE.WebGLRenderer();
+            renderer.setClearColor( 0xffffff );
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            controls = new THREE.TrackballControls(camera);
+            document.getElementById('container').appendChild(renderer.domElement);
+        }
+
+        var vertices = [
+            new THREE.Vector3( -100 , -100 , 100),
+            new THREE.Vector3(  100 , -100 ,  100),
+            new THREE.Vector3(  0 ,  100 ,  0),
+            new THREE.Vector3(  0 , -100 , -100)
+        ];
+        var points = [];
+        divideTriangle(vertices[0] , vertices[1] , vertices[2] ,vertices[3], 4);
+
+
+        function generatePoint(a,b,c,d){
+            points.push(a,b,c,d);
+        }
+
+        function divideTriangle(a , b ,c , d ,dep){
+            if(dep === 0){
+                generatePoint(a, b , c , d);
+            }
+            else{
+                dep--;
+                var ab = mix(a , b , 0.5);
+                var ac = mix(a , c , 0.5);
+                var ad = mix(a , d , 0.5);
+                var bc = mix(b , c , 0.5);
+                var bd = mix(b , d , 0.5);
+                var cd = mix(c , d , 0.5);
+
+                divideTriangle(a , ab, ac ,ad , dep);
+                divideTriangle(b , ab, bc ,bd , dep);
+                divideTriangle(c , bc,  ac ,cd , dep);
+                divideTriangle(d , bd, cd ,ad , dep);
+
+            }
+        }
+        function mix(a,b,scale){
+            var point = new THREE.Vector3((a.x+b.x)*scale,(a.y+b.y)*scale,(a.z+b.z)*scale);
+
+            return point;
+        }
+        function generatTriagnle(a,b,c,d){
+            var geometry = new THREE.Geometry();
+            geometry.vertices.push(a);
+            geometry.vertices.push(b);
+            geometry.vertices.push(c);
+            geometry.vertices.push(d);
+            geometry.faces.push(new THREE.Face3( 0, 1, 2 ));
+            geometry.faces.push(new THREE.Face3( 0, 2, 3 ));
+            geometry.faces.push(new THREE.Face3( 0, 1, 3 ));
+            geometry.faces.push(new THREE.Face3( 2, 1, 3 ));
+
+
+            var material = new THREE.MeshBasicMaterial({color:0xffffff*Math.random(),side:THREE.DoubleSide});
+
+            scene.add(new THREE.Mesh(geometry,material));
+        }
+
+
+        render();
+
+        for(let i = 0 ; i < points.length;i+=4){
+            generatTriagnle(points[i],points[i+1],points[i+2],points[i+3]);
+        }
+        function render(){
+            requestAnimationFrame(render);
+            renderer.render(scene,camera);
+            controls.update();
+        }
+    </script>
+</body>
+</html>
