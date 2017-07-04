@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <!--着色漆-->
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 aPosition;
+        varying vec4 fColor;
+        void main(){
+            fColor = vec4((aPosition.xyz+1.0)/2.0,1.0);
+            gl_PointSize = 1.0;
+            gl_Position = aPosition;
+        }
+    </script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+        varying vec4 fColor;
+        void main(){
+            gl_FragColor = fColor;
+        }
+    </script>
+    <script src="../initShaders.js"></script>
+    <script src="../myFrame.js"></script>
+</head>
+<body>
+<canvas width="512" height="512" id="container"></canvas>
+<script>
+    canvas = document.getElementById('container');
+    var gl = canvas.getContext('webgl');
+
+    var vertices = [
+        vec3( -1 , -1 , 1),
+        vec3(  1 , -1 ,  1),
+        vec3(  0 ,  1 ,  0),
+        vec3(  0 , -1 , -1),
+    ];
+    var points = sierpinski(vertices,500000)();
+    function sierpinski(vertices,length){
+        var vertices = vertices;
+
+        return function(){
+            var points = [];
+
+            //sierpinski算法
+            var u = mix( vertices[0] , vertices[1] , 0.5);
+            var v = mix( vertices[0] , vertices[2] , 0.5);
+            points.push( mix( u , v ,0.5));
+            for(let i = points.length ; i < length ;i++){
+                var r = Math.floor(Math.random()*4);
+                points.push(mix(points[i-1] , vertices[r] , 0.5));
+            }
+            return points;
+        }
+    }
+    var canvas = document.getElementById('container');
+    var gl = document.getElementById('container').getContext('webgl');
+    var program = initShaders( gl, "vertex-shader", "fragment-shader" );
+    gl.viewport( 0, 0, canvas.width, canvas.height );
+    gl.clearColor( 1.0, 1.0, 1.0, 1.0 );
+    gl.useProgram(program);
+    var buffer = gl.createBuffer();
+    gl.bindBuffer( gl.ARRAY_BUFFER , buffer);
+    gl.bufferData( gl.ARRAY_BUFFER , flatten(points) , gl.STATIC_DRAW);
+
+    var aPosition = gl.getAttribLocation( program, "aPosition" );
+    gl.vertexAttribPointer( aPosition, 3, gl.FLOAT, false, 0, 0 );
+    gl.enableVertexAttribArray( aPosition );
+
+    render();
+
+    function render(){
+        gl.clear( gl.COLOR_BUFFER_BIT );
+        gl.drawArrays( gl.POINTS, 0, points.length );
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../initShaders.js"></script>
+    <script src="../myFrame.js"></script>
+</head>
+<body>
+    <!--着色器-->
+    <script id="vertex-shader" type="x-shader/x-vertex">
+        attribute vec4 aPosition;
+        void main(){
+            gl_PointSize = 1.0;
+            gl_Position = aPosition;
+        }
+    </script>
+    <script id="fragment-shader" type="x-shader/x-fragment">
+        precision mediump float;
+        void main(){
+            gl_FragColor = vec4(1.0 , 0.0 , 0.0 ,1.0);
+        }
+    </script>
+
+
+    <canvas id="container" width="600" height="600"></canvas>
+
+    <script>
+        var canvas = document.getElementById('container');
+        var gl = canvas.getContext('webgl');
+
+        //生成sier算法
+        var dep = 3;
+        var points = [];
+
+        var vertices = [
+            vec3( -1 , -1 , 1),
+            vec3(  1 , -1 ,  1),
+            vec3(  0 ,  1 ,  0),
+            vec3(  0 , -1 , -1)
+        ];
+
+        divideTriangle(vertices[0] , vertices[1] , vertices[2] ,vertices[3], dep);
+
+        function divideTriangle(a , b ,c , d ,dep){
+            if(dep === 0){
+                generatePoint(a, b , c , d);
+            }
+            else{
+                dep--;
+                var ab = mix(a , b , 0.5);
+                var ac = mix(a , c , 0.5);
+                var ad = mix(a , d , 0.5);
+                var bc = mix(b , c , 0.5);
+                var bd = mix(b , d , 0.5);
+                var cd = mix(c , d , 0.5);
+
+                divideTriangle(a , ab, ac ,ad , dep);
+                divideTriangle(ab , b, bc ,bd , dep);
+                divideTriangle(ac , bc,  c ,cd , dep);
+                divideTriangle(ad , bd, cd ,d , dep);
+
+            }
+        }
+
+        function generatePoint(a,b,c){
+            points.push(a,b,c);
+        }
+        gl.viewport(0,0,canvas.width,canvas.height);
+        gl.clearColor(1.0,1.0,1.0,1.0);
+
+        var program = initShaders(gl , 'vertex-shader' , 'fragment-shader');
+
+        gl.useProgram(program);
+
+        var buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER , buffer);
+        gl.bufferData(gl.ARRAY_BUFFER , flatten(points) , gl.STATIC_DRAW );
+
+        var aPosition = gl.getAttribLocation( program , 'aPosition');
+        gl.vertexAttribPointer(aPosition , 3 , gl.FLOAT , false , 0 , 0);
+        gl.enableVertexAttribArray(aPosition);
+
+        render();
+
+        function render(){
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            gl.drawArrays(gl.TRIANGLES , 0 , points.length);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="../initShaders.js"></script>
+    <script src="../myFrame.js"></script>
+    <script id="shader-vertex" type="x-shader/x-vertex">
+        attribute vec4 aPosition;
+        uniform float theta;
+        void main(){
+            gl_Position.x = aPosition.x*cos(theta) - aPosition.y*sin(theta);
+            gl_Position.y = aPosition.y*cos(theta) + aPosition.x*sin(theta);
+            gl_Position.z = 0.0;
+            gl_Position.w = 1.0;
+        }
+    </script>
+    <script id="shader-fragment" type="x-shader/x-fragment">
+        precision mediump float;
+        void main(){
+            gl_FragColor = vec4(1.0,0.0,0.0,1.0);
+        }
+    </script>
+</head>
+<body>
+    <canvas id="container" width="600" height="600"></canvas>
+    <script>
+
+        var container = document.getElementById('container');
+        var gl = container.getContext('webgl');
+        var vertices = [
+            vec3(-0.5,0.5,0),
+            vec3(-0.5,-0.5,0),
+            vec3(0.5,0.5,0),
+            vec3(0.5,-0.5,0)
+        ]
+        var program = initShaders(gl,'shader-vertex','shader-fragment');
+
+        gl.useProgram(program);
+
+        gl.viewport(0,0,container.width,container.height);
+        gl.clearColor(1.0,1.0,1.0,1.0);
+
+        var buffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER,buffer);
+        gl.bufferData(gl.ARRAY_BUFFER,flatten(vertices),gl.STATIC_DRAW);
+
+        var aPloc = gl.getAttribLocation(program,'aPosition');
+        gl.vertexAttribPointer(aPloc , 3 , gl.FLOAT,false,0,0);
+        gl.enableVertexAttribArray(aPloc);
+
+
+
+
+
+        var theta = 0.0;
+        var thetaLoc = gl.getUniformLocation( program, "theta" );
+
+        var t1,t2;
+        var date = new Date();
+        var direction = 1;
+        render();
+
+        container.addEventListener('click',function(e){
+            direction = -(direction);
+        })
+        function render(){
+            t1 = date.getTime();
+            gl.clear( gl.COLOR_BUFFER_BIT );
+            theta += (direction*0.2 );
+            gl.uniform1f( thetaLoc, theta );
+            gl.drawArrays( gl.TRIANGLE_STRIP, 0, 4 );
+            t2 = date.getTime();
+
+            requestAnimationFrame(render);
+        }
+    </script>
+</body>
+</html>
