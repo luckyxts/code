@@ -14,7 +14,7 @@
             left:0;
         }
     </style>
-    <script src="../myFrame.js"></script>
+    <script src="../fractal.js"></script>
 </head>
 <body>
     <canvas id="container" width="400" height="400"></canvas>
@@ -164,10 +164,10 @@
             }
             dp = (pl - ps)/400;
             dq = (ql - qs)/400;
-            var tmp = ps;
+            tmp = ps;
             ps = ps + X1*dp;
             pl = tmp + X2*dp;
-            var tmp = qs;
+            tmp = qs;
             qs = qs + Y1*dq;
             ql = tmp + Y2*dq;
             ctx.clearRect(0,0,400,400);
